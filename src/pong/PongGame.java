@@ -20,25 +20,25 @@ public class PongGame extends Canvas implements Runnable, KeyListener {
 	public SpriteSheet fieldSheet;
 	public BufferedImage field;
 	
-	public Player player;
-	public OtherPlayer player2;
-	public Ball ball;
+	public static Player player;
+	public static OtherPlayer player2;
+	public static Ball ball;
 	
-	public PongGame() {
+	public PongGame(int p1, int p2) {
 		this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		this.addKeyListener(this);
 		
 		fieldSheet = new SpriteSheet("/camp.png");
 		field = fieldSheet.getSprite(0, 0, 1440, 900);
 		
-		player = new Player();
-		player2 = new OtherPlayer();
+		player = new Player(p1);
+		player2 = new OtherPlayer(p2);
 		ball = new Ball();
 	}
 	
 	public static void main(String[] args) {
 		
-		PongGame game = new PongGame();
+		PongGame game = new PongGame(0, 0);
 		
 		JFrame jframe = new JFrame("Pong Game"); //Instancing the window.
 		jframe.setVisible(true);	
@@ -85,7 +85,9 @@ public class PongGame extends Canvas implements Runnable, KeyListener {
 	}
 	
 	public void tick() {
+		ball.tick();
 		player.tick();
+		player2.tick();
 	}
 	
 	@Override
@@ -94,7 +96,6 @@ public class PongGame extends Canvas implements Runnable, KeyListener {
 			requestFocus();
 			tick();
 			render();
-			ball.tick();
 			try {
 				Thread.sleep(1000/60);
 			}
@@ -117,6 +118,8 @@ public class PongGame extends Canvas implements Runnable, KeyListener {
 			ball.isPlaying = true;
 			ball.up = true;
 			ball.left = true;
+			ball.right= false;
+			ball.down= false;
 		}
 	}
 

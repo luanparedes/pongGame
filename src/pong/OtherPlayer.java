@@ -2,6 +2,7 @@ package pong;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 public class OtherPlayer implements IPlayers{
@@ -14,16 +15,18 @@ public class OtherPlayer implements IPlayers{
 	
 	public boolean up;
 	public boolean down;
-	public int x;
-	public int y;
+	public double x;
+	public double y;
 	public int width;
 	public int height;
+	public int goals;
 	
-	public OtherPlayer() {
+	public OtherPlayer(int goal) {
 		this.width = 15 * PongGame.SCALE;
 		this.height = 80 * PongGame.SCALE;
 		this.x = W_SCALE - 30;
 		this.y = H_SCALE - (H_SCALE / 2) - (height / 2);
+		this.goals = goal;
 		
 		otherPlayerSheet = new SpriteSheet("/mew.png");
 		otherPlayer = otherPlayerSheet.getSprite(0, 0, 256, 256);
@@ -31,23 +34,23 @@ public class OtherPlayer implements IPlayers{
 	
 	@Override
 	public void tick() {
-		if(up) {
-			y+=3;
+		if(PongGame.ball.up) {
+			y -= PongGame.ball.ballSpeed - 2;
 		}
-		else if(down) {
-			y-=3;
+		else if(PongGame.ball.down) {
+			y += PongGame.ball.ballSpeed - 2;
 		}
-		
-		if(y + height > H_SCALE) {
-			y = H_SCALE - height;
-		}
-		else if(y < 0) {
-			y = 0;
-		}
+
 	}
 	
 	@Override
 	public void render(Graphics p2) {
-		p2.drawImage(otherPlayer, x-130, y, width + 100, height, null);
+		p2.drawImage(otherPlayer, (int)x-130, (int)y, width + 100, height, null);
+	}
+	
+	@Override
+	public void goal() {
+		this.goals += 1;
+		System.out.println("Player: " + PongGame.player.goals + "\nRival: " + this.goals);
 	}
 }

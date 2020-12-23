@@ -1,23 +1,28 @@
 package pong;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 public class Ball implements IPlayers{
 	
+	//Constants
 	public final int W_SCALE = PongGame.WIDTH * PongGame.SCALE;
 	public final int H_SCALE = PongGame.HEIGHT * PongGame.SCALE;
 	
-	public int x, y;
+	//Variables
+	public int x;
+	public int y;
 	public boolean isPlaying;
-	private int ballSpeed = 3;
-	public boolean up;
-	public boolean down;
-	public boolean left;
-	public boolean right;
+	public static int ballSpeed = 3;
+	public static boolean up;
+	public static boolean down;
+	public static boolean left;
+	public static boolean right;
 	
 	private SpriteSheet sheet;
 	private BufferedImage ball;
+
 	
 	public Ball() {
 		this.x = W_SCALE - (W_SCALE / 2) - 12;
@@ -31,9 +36,9 @@ public class Ball implements IPlayers{
 	@Override
 	public void tick() {
 		if(isPlaying) {
+			ballColision();
 			ballInteligence();
 			ballControl();
-			
 		}
 	}
 
@@ -55,37 +60,42 @@ public class Ball implements IPlayers{
 		if(right) {
 			x += ballSpeed;
 		}
-		/*
-		if(y + 24 > H_SCALE) {
-			y = H_SCALE - 24;
-		}
-		else if(y < 0) {
-			y = 0;
-		}
 		
-		if(x + 24 > W_SCALE) {
-			x = W_SCALE - 24;
-		}
-		else if(x < 0){
-			x = 0;
-		}*/
 	}
 	
 	public void ballInteligence() {
-		if(y + 24 > H_SCALE) {
+		if(y + 40 > H_SCALE) {
 			downContact();
 		}
 		
-		if(y <= 0) {
+		if(y <= 12) {
 			upContact();
 		}
 		
-		if(x + 24 > W_SCALE) {
-			rightContact();
+		if(x + 75 > W_SCALE) {
+			PongGame.player.goal();
+			PongGame.ball.goal();
 		}
 		
-		if(x <= 0) {
-			leftContact();
+		if(x <= 50) {
+			PongGame.player2.goal();
+			PongGame.ball.goal();
+		}
+		
+	}
+	
+	public void ballColision() {
+		Rectangle rectBall = new Rectangle(x, y, 24, 24);
+		Rectangle rectPlayer1 = new Rectangle(PongGame.player.x + 80, PongGame.player.y, PongGame.player.width, PongGame.player.height);
+		Rectangle rectPlayer2 = new Rectangle((int)PongGame.player2.x - 85, (int)PongGame.player2.y, PongGame.player2.width, PongGame.player2.height);
+
+		if(rectBall.intersects(rectPlayer1)) {
+			System.out.println("Tocou no jogador");
+			this.leftContact();
+		}
+		else if(rectBall.intersects(rectPlayer2)) {
+			System.out.println("Tocou no rival");
+			this.rightContact();
 		}
 	}
 	
@@ -108,5 +118,25 @@ public class Ball implements IPlayers{
 		this.right = false;
 		this.left = true;
 	}
+	
+	@Override
+	public void goal() {
+		new PongGame(PongGame.player.goals, PongGame.player2.goals);
+	}
 
+	public int getY() {
+		return this.y;
+	}
+	
+	public void setY(int y) {
+		this.y = y;
+	}
+	
+	public int getX() {
+		return this.x;
+	}
+	
+	public void setX(int x) {
+		this.x = x;
+	}
 }
